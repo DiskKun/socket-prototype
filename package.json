@@ -1,0 +1,10 @@
+{
+    "name": "socket-prototype-1",
+    "version": "0.0.1",
+    "description": "2 Player game prototype",
+    "type": "commonjs",
+    "dependencies": {
+        "express": "^5.1.0",
+        "socket.io": "^4.8.1"
+    }
+}
