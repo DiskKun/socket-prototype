@@ -1,40 +1,57 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Socket Prototype</title>
     <style>
-      
+
     </style>
-  </head>
-  <body>
+</head>
+
+<body>
     <p id="currKey">Placeholder text</p>
     <canvas id="mainGameCanvas" width="800" height="600" style="border:1px solid #000000;"></canvas>
     <script src="/socket.io/socket.io.js"></script>
-<script>
+    <script>
 
-    scr = document.getElementById("mainGameCanvas");
-    ctx = scr.getContext("2d");
-    keyText = document.getElementById("currKey");
-  const socket = io();
-    onkeydown = (event) => { 
-        console.log(event.key);
-        socket.emit("keyDown", event.key);
-    }
+        scr = document.getElementById("mainGameCanvas");
+        ctx = scr.getContext("2d");
+        keyText = document.getElementById("currKey");
+        socketId = "";
+        const socket = io();
 
-    socket.on("key_event", (e) => {
-        keyText.innerHTML = "Key press event: " + e;
-    });
+        onkeydown = (event) => {
+            socket.emit("KeyDown", event.key, socketId);
+        }
 
-    socket.on("updateFrame", () => {
-        drawRandomCircle();
-    });
+        onkeyup = (event) => {
+            socket.emit("KeyUp", event.key, socketId);
+        }
 
-    function drawRandomCircle() {
-        ctx.beginPath();
-        ctx.arc(Math.random() * 800, Math.random() * 600, 40, 0, 2 * Math.PI);
-        ctx.stroke();
-    }
-</script>
-  </body>
+        socket.on("KeyEvent", (e) => {
+            keyText.innerHTML = "Key press event: " + e;
+        });
+
+        socket.on("Identify", (id) => {
+            socketId = id;
+            console.log("ID: " + id);
+        });
+
+        socket.on("updateFrame", (players) => {
+            ctx.clearRect(0, 0, scr.width, scr.height);
+            Object.keys(players).forEach(key => {
+                // console.log(players[key].x, players[key].y);
+                drawCircle(players[key].x, players[key].y);
+            })
+        });
+
+        function drawCircle(x, y) {
+            ctx.beginPath();
+            ctx.arc(x, y, 40, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
+    </script>
+</body>
+
 </html>
